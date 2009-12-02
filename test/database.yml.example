@@ -1,0 +1,7 @@
+test:
+  adapter: mysql
+  database: bulk_insert_test
+  username: root
+  password:
+  pool: 5
+  timeout: 5000

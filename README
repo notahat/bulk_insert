@@ -1,0 +1,11 @@
+BulkInsert
+==========
+
+Use MySQL's "INSERT INTO...ON DUPLICATE KEY UPDATE" to do bulk insertions
+and updates of ActiveRecord data.
+
+I was using similar functionality from the ar_extensions plugin, but that
+kept causing upgrade problems, and I don't need everything else it does.
+
+
+Copyright (c) 2009 Peter Yandell, released under the MIT license
