@@ -3,8 +3,8 @@ module BulkInsert
   # Insert multiple rows into a table.
   #
   #   Post.bulk_insert(["title", "body"], [["Title A", "Body a"], ["Title B", "Body b"]])
-  def bulk_insert(column_names, data)
-    connection.execute(sql_for_bulk_insert(column_names, data)) unless data.empty?
+  def bulk_insert(column_names, data, options = {})
+    connection.execute(sql_for_bulk_insert(column_names, data, options)) unless data.empty?
   end
   
   # Update multiple rows into a table.
@@ -16,19 +16,21 @@ module BulkInsert
     connection.execute(sql_for_bulk_update(column_names, data)) unless data.empty?
   end
   
-  def sql_for_bulk_insert(column_names, data)
+  def sql_for_bulk_insert(column_names, data, options = {})
     quoted_table_name   = connection.quote_table_name(table_name)
     quoted_column_names = quote_column_names(column_names)
     quoted_data         = quote_data(data)
-    "INSERT INTO #{quoted_table_name} (#{quoted_column_names.join(',')}) VALUES #{quoted_data.join(',')}"
+    
+    sql = "INSERT INTO #{quoted_table_name} (#{quoted_column_names.join(',')}) VALUES #{quoted_data.join(',')}"
+    if options[:on_duplicate_key_update]
+      update_clauses = options[:on_duplicate_key_update].map {|name| "#{name}=VALUES(#{name})" }
+      sql << " ON DUPLICATE KEY UPDATE #{update_clauses.join(',')}"
+    end
+    sql
   end
   
   def sql_for_bulk_update(column_names, data)
-    sql = sql_for_bulk_insert(column_names, data)
-    column_names.delete(primary_key)
-    quoted_column_names = quote_column_names(column_names)
-    update_clauses      = quoted_column_names.map {|name| "#{name}=VALUES(#{name})" }
-    "#{sql} ON DUPLICATE KEY UPDATE #{update_clauses.join(',')}"
+    sql_for_bulk_insert(column_names, data, :on_duplicate_key_update => column_names - [primary_key])
   end
   
 private
