@@ -1,0 +1,1 @@
+require 'bulk_insert'
