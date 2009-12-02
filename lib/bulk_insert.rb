@@ -4,7 +4,7 @@ module BulkInsert
   #
   #   Post.bulk_insert(["title", "body"], [["Title A", "Body a"], ["Title B", "Body b"]])
   def bulk_insert(column_names, data)
-    connection.execute(sql_for_bulk_insert(column_names, data))
+    connection.execute(sql_for_bulk_insert(column_names, data)) unless data.empty?
   end
   
   # Update multiple rows into a table.
@@ -13,7 +13,7 @@ module BulkInsert
   #
   # If a row with the right id doesn't exist, it will be created.
   def bulk_update(column_names, data)
-    connection.execute(sql_for_bulk_update(column_names, data))
+    connection.execute(sql_for_bulk_update(column_names, data)) unless data.empty?
   end
   
   def sql_for_bulk_insert(column_names, data)

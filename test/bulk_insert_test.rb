@@ -24,4 +24,16 @@ class BulkInsertTest < ActiveSupport::TestCase
     assert_equal "New body b.", post_b.body
   end
   
+  test "bulk insert with emtpy data" do
+    Post.bulk_insert(%w{title body}, [])
+    assert_equal 0, Post.count
+  end
+  
+  test "bulk insert with symbols for column names" do
+    Post.bulk_insert([:title, :body], [["a", "b"]])
+    assert_equal 1, Post.count
+    assert_equal "a", Post.first.title
+    assert_equal "b", Post.first.body
+  end
+  
 end
